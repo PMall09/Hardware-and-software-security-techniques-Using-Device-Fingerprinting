@@ -1,9 +1,3 @@
-% BUILDING FINGERPRINT MINUTIAE DATABASE
-% Usage:  build_db(ICount, JCount);
-% Argument:   ICount -  Number of FingerPrints 
-%             JCount -  Number of Images Per FingerPrint
-
-
 function build_db(ICount, JCount)
     p=0;
     for i=1:ICount
@@ -17,15 +11,6 @@ function build_db(ICount, JCount)
     end
     save('db.mat','ff');
 end
-
-% GENERATING FMR AND FNMR DATA
-%
-% Usage:  build_fmr;
-%
-% Argument:   Nothing
-%               
-
-
 function  build_fmr( )
     load('db.mat'); P=72;
     fmr=zeros(100,P); fnmr=zeros(100,P);
@@ -51,21 +36,9 @@ function  build_fmr( )
     save('fmr.mat','fmr');
     save('fnmr.mat','fnmr');
 end
-
-% EXTRACTING FEATURE FROM A FINGERPRINT IMAGE
-%
-% Usage:  [ ret ] = ext_finger( img, display_flag );
-%
-% Argument:   img - FingerPrint Image
-%             display_flag
-%               
-% Returns:    ret - Minutiae
-
-
 function [ ret ] = ext_finger( img, display_flag )
     if nargin==1; display_flag=0; end
     block_size_c = 24; YA=0; YB=0; XA=0; XB=0;
-% Enhancement -------------------------------------------------------------
     if display_flag==1; fprintf(' >>> enhancement '); end
     yt=1; xl=1; yb=size(img,2); xr=size(img,1);
     for x=1:55
@@ -95,7 +68,6 @@ function [ ret ] = ext_finger( img, display_flag )
         end	
     end
     [ binim, mask, cimg, cimg2, orient_img, orient_img_m ] = f_enhance(img);
-% Making Mask -------------------------------------------------------------
     if display_flag==1; fprintf('done.\n >>> making mask '); end
     mask_t=mask;
     for y=19:size(mask,1)-block_size_c*2
@@ -302,17 +274,13 @@ function [ ret ] = ext_finger( img, display_flag )
        core_val = 255;
     end
     mask=mask_t; path_len = 45;
-
-% Finding Minutiae 
     if display_flag==1; fprintf('done.\n >>> finding minutiae '); end
     minu_count = 1;
     minutiae(minu_count, :) = [0,0,0,0,0,1];
     min_path_index = [];
-    % loop through image and find minutiae, ignore certain pixels for border
     for y=20:size(img,1)-14
         for x=21:size(img,2)-21
-            if (thinned(y, x) == 1) % only continue if pixel is white
-                % calculate CN from Raymond Thai
+            if (thinned(y, x) == 1) 
                 CN = 0; sx=0; sy=0;
                 for i = 1:8
                   t1 = p(thinned, x, y, i);
@@ -383,8 +351,6 @@ function [ ret ] = ext_finger( img, display_flag )
             end % if pixel white
         end % for y
     end % for x
-
-% Filtering False Minutiae ------------------------------------------------
     if display_flag==1; fprintf('done.\n >>> filtering false minutiae '); end
     minu_count = minu_count -1;
     t_minutiae = [];
@@ -515,8 +481,6 @@ function [ ret ] = ext_finger( img, display_flag )
        minutiae(minu_count+1, :) = [delta3_x, delta3_y, 7, 0, 1,1];
        minu_count = minu_count + 1;
     end
-
-% Return Minutiae ---------------------------------------------------------
     if display_flag == 1
         fprintf('done.\n');
         minutiae_img = uint8(zeros(size(img, 1),size(img, 2), 3));
@@ -604,27 +568,13 @@ function [ ret ] = ext_finger( img, display_flag )
     end
     ret=minutiae;
 end
-
-% ENHANCING FINGERPRINT IMAGE
-%
-% Usage:  [ binim, mask, cimg, cimg2, orient_img, orient_img_m ] =
-%          ... f_enhance( img );
-%
-% Argument:   img - FingerPrint Image
-%               
-% Returns:    binim   - binary image 
-%             mask    - binary mask
-%             cimg1,2 - coherence image
-%             oimg1,2 - The orientation image in radians.
-
-
 function [ binim, mask, cimg1, cimg2, oimg1, oimg2 ] = f_enhance( img )
-    enhimg =  fft_enhance_cubs(img,6);             % Enhance with Blocks 6x6
-    enhimg =  fft_enhance_cubs(enhimg,12);         % Enhance with Blocks 12x12
-    [enhimg,cimg2] =  fft_enhance_cubs(enhimg,24); % Enhance with Blocks 24x24
-    blksze = 5;   thresh = 0.085;                  % FVC2002 DB1
+    enhimg =  fft_enhance_cubs(img,6);             
+    enhimg =  fft_enhance_cubs(enhimg,12);         
+    [enhimg,cimg2] =  fft_enhance_cubs(enhimg,24); 
+    blksze = 5;   thresh = 0.085;                  
     normim = ridgesegment(enhimg, blksze, thresh);
-    oimg1 = ridgeorient(normim, 1, 3, 3);          % FVC2002 DB1
+    oimg1 = ridgeorient(normim, 1, 3, 3);          
     
     [enhimg,cimg1] =  fft_enhance_cubs(img, -1);
     [normim, mask] = ridgesegment(enhimg, blksze, thresh);
@@ -635,11 +585,6 @@ end
 
 
 clear all; clc; addpath(genpath(pwd));
-
-%% BUILDING FMR AND FNMR, THIS WILL TAKE ABOUT 2 HOURS
-% build_fmr
-
-%% PLOT FMR & FNMR
 load('fmr.mat'); load('fnmr.mat');
 figure, hold on;
 
@@ -659,14 +604,11 @@ xlabel('Similarity Score'); ylabel('Rate');
 
 clear all; clc; addpath(genpath(pwd));
 
-%% EXTRACT FEATURES FROM AN ARBITRARY FINGERPRINT
 filename='101_1.tif';
 img = imread(filename);
 if ndims(img) == 3; img = rgb2gray(img); end  % Color Images
 disp(['Extracting features from ' filename ' ...']);
 ffnew=ext_finger(img,1);
-
-%% GET FEATURES OF AN ARBITRARY FINGERPRINT FROM THE TEMPLATE AND MATCH IT WITH FIRST ONE
 load('db.mat'); i=2;
 second=['10' num2str(fix((i-1)/8)+1) '_' num2str(mod(i-1,8)+1)];
 disp(['Computing similarity between ' filename ' and ' second ' from FVC2002']);
@@ -674,18 +616,13 @@ S=match(ffnew,ff{i},1);
 
 
 clear all; clc; addpath(genpath(pwd));
-%% BUILD FINGERPRINT TEMPLATE DATABASE
-% build_db(9,8);        %THIS WILL TAKE ABOUT 30 MINUTES
 load('db.mat');
-
-%% EXTRACT FEATURES FROM AN ARBITRARY FINGERPRINT
 filename='101_1.tif';
 img = imread(filename);
 if ndims(img) == 3; img = rgb2gray(img); end  % Color Images
 disp(['Extracting features from ' filename ' ...']);
 ffnew=ext_finger(img,1);
 
-%% FOR EACH FINGERPRINT TEMPLATE, CALCULATE MATCHING SCORE IN COMPARISION WITH FIRST ONE
 S=zeros(72,1);
 for i=1:72
     second=['10' num2str(fix((i-1)/8)+1) '_' num2str(mod(i-1,8)+1)];
@@ -694,21 +631,8 @@ for i=1:72
     fprintf([num2str(S(i)) '\n']);
     drawnow
 end
-%% OFFER MATCHED FINGERPRINTS
+
 Matched_FigerPrints=find(S>0.48)
-
-
-% FINGERPRINT MATCHING SCORE
-%
-% Usage:  [ S ] = match( M1, M2, display_flag );
-%
-% Argument:   M1 -  First Minutiae 
-%             M2 -  Second Minutiae
-%             display_flag
-%               
-% Returns:    S - Similarity Measure
-
-
 function [ S ] = match( M1, M2, display_flag )
     if nargin==2; display_flag=0; end
     M1=M1(M1(:,3)<5,:);
@@ -741,18 +665,6 @@ function [ S ] = match( M1, M2, display_flag )
         plot_data(T3,2);
     end
 end
-
-
-% TRANSFORMED MINUTIAE MATCHING SCORE
-%
-% Usage:  [ si ] = score( T1, T2 );
-%
-% Argument:   T1 -  First  Transformed Minutiae 
-%             T2 -  Second Transformed Minutiae
-%               
-% Returns:    sm - Similarity Measure
-
-
 function [ sm ] = score( T1, T2 )
     Count1=size(T1,1); Count2=size(T2,1); n=0;
     T=15;  %Threshold for distance
@@ -776,18 +688,6 @@ function [ sm ] = score( T1, T2 )
     end
     sm=sqrt(n^2/(Count1*Count2));       %Similarity Index
 end
-
-
-% COORDINATION TRANSFORM FUNCTION
-%
-% Usage:  [ T ] = transform( M, i );
-%
-% Argument:   M -  Extracted Minutiae 
-%             i -  Index of reference minutia
-%               
-% Returns:    T -  M with new coordinations
-
-
 function [ T ] = transform( M, i )
     Count=size(M,1);
     XRef=M(i,1); YRef=M(i,2); ThRef=M(i,4);
@@ -800,17 +700,6 @@ function [ T ] = transform( M, i )
         T(i,4)=M(i,3);
     end
 end
-
-% COORDINATION TRANSFORM FUNCTION
-%
-% Usage:  [ Tnew ] = transform2( T, alpha );
-%
-% Argument:   T     - Transformed Minutiae
-%             alpha - Rotation angle
-%               
-% Returns:    Tnew  - T with new coordinations
-
-
 function [ Tnew ] = transform2( T, alpha )
     Count=size(T,1);
     Tnew=zeros(Count,4);
@@ -822,16 +711,6 @@ function [ Tnew ] = transform2( T, alpha )
         Tnew(i,:)=R*B';
     end
 end
-
-% PLOT DATA
-%
-% Usage:  plot_data( X,y );
-%
-% Argument:   X -  Data Points
-%             y -  Plot Style (1 for blue, 2 for red, ...)
-
-
-
 function plot_data( X,y )
     N=size(X,1); r=15;
     hold on; axis equal;
@@ -845,12 +724,3 @@ function plot_data( X,y )
     end
     hold off;
 end
-
-
-
-
-
-
-
-
-
