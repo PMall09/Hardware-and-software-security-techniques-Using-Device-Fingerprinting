@@ -1,16 +1,8 @@
 % BUILDING FINGERPRINT MINUTIAE DATABASE
-%
 % Usage:  build_db(ICount, JCount);
-%
 % Argument:   ICount -  Number of FingerPrints 
 %             JCount -  Number of Images Per FingerPrint
-%               
 
-% Vahid. K. Alilou
-% Department of Computer Engineering
-% The University of Semnan
-%
-% July 2013
 
 function build_db(ICount, JCount)
     p=0;
@@ -33,11 +25,6 @@ end
 % Argument:   Nothing
 %               
 
-% Vahid. K. Alilou
-% Department of Computer Engineering
-% The University of Semnan
-%
-% July 2013
 
 function  build_fmr( )
     load('db.mat'); P=72;
@@ -74,15 +61,6 @@ end
 %               
 % Returns:    ret - Minutiae
 
-% Adapted from Joshua Abraham, "Fingerprint Matching using A Hybrid
-% Shape and Orientation Descriptor", State of the art in Biometrics,
-% ISBN 978-953-307-489-4, July 2011
-
-% Vahid. K. Alilou
-% Department of Computer Engineering
-% The University of Semnan
-%
-% July 2013
 
 function [ ret ] = ext_finger( img, display_flag )
     if nargin==1; display_flag=0; end
@@ -325,7 +303,7 @@ function [ ret ] = ext_finger( img, display_flag )
     end
     mask=mask_t; path_len = 45;
 
-% Finding Minutiae --------------------------------------------------------
+% Finding Minutiae 
     if display_flag==1; fprintf('done.\n >>> finding minutiae '); end
     minu_count = 1;
     minutiae(minu_count, :) = [0,0,0,0,0,1];
@@ -639,11 +617,6 @@ end
 %             cimg1,2 - coherence image
 %             oimg1,2 - The orientation image in radians.
 
-% Vahid. K. Alilou
-% Department of Computer Engineering
-% The University of Semnan
-%
-% July 2013
 
 function [ binim, mask, cimg1, cimg2, oimg1, oimg2 ] = f_enhance( img )
     enhimg =  fft_enhance_cubs(img,6);             % Enhance with Blocks 6x6
@@ -735,11 +708,6 @@ Matched_FigerPrints=find(S>0.48)
 %               
 % Returns:    S - Similarity Measure
 
-% Vahid. K. Alilou
-% Department of Computer Engineering
-% The University of Semnan
-%
-% July 2013
 
 function [ S ] = match( M1, M2, display_flag )
     if nargin==2; display_flag=0; end
@@ -784,11 +752,6 @@ end
 %               
 % Returns:    sm - Similarity Measure
 
-% Vahid. K. Alilou
-% Department of Computer Engineering
-% The University of Semnan
-%
-% July 2013
 
 function [ sm ] = score( T1, T2 )
     Count1=size(T1,1); Count2=size(T2,1); n=0;
@@ -824,11 +787,6 @@ end
 %               
 % Returns:    T -  M with new coordinations
 
-% Vahid. K. Alilou
-% Department of Computer Engineering
-% The University of Semnan
-%
-% July 2013
 
 function [ T ] = transform( M, i )
     Count=size(M,1);
@@ -852,11 +810,6 @@ end
 %               
 % Returns:    Tnew  - T with new coordinations
 
-% Vahid. K. Alilou
-% Department of Computer Engineering
-% The University of Semnan
-%
-% July 2013
 
 function [ Tnew ] = transform2( T, alpha )
     Count=size(T,1);
@@ -877,11 +830,7 @@ end
 % Argument:   X -  Data Points
 %             y -  Plot Style (1 for blue, 2 for red, ...)
 
-% Vahid. K. Alilou
-% Department of Computer Engineering
-% The University of Semnan
-%
-% July 2013
+
 
 function plot_data( X,y )
     N=size(X,1); r=15;
