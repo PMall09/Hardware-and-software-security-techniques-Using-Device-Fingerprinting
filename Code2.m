@@ -1,22 +1,10 @@
-%----------------------------------------------------------
-%angular_filter_bank
-%precomputes angular filter bank and also generates a C
-%header file with filter coefficients. The matlab variable
-%angf is stored in file 'angular_filters.mat' and the C 
-%variables are stored in 'angular_fiter.h'.
-%There are TSTEPS number of raised cosine filter that span the 
+
 %interval [0,180]
-%usage
+
 % angular_filter_bank(BW,fname)
 %BW    - bandwidth (radians)
 %fname - file name
-%Contact:
-%   ssc5@eng.buffalo.edu
-%   www.eng.buffalo.edu/~ssc5
-%References:
-%B.G.Sherlock and  D.M.Monro and  K.Millard,"Fingerprint Enhancement by
-%directional Fourier Filtering",IEEE Visual Image Signal Processing,
-%141(2), pp. 87--94, 1994
+
 %----------------------------------------------------------
 function angular_filter_bank(BW,fname)
 close all;
@@ -102,12 +90,7 @@ function d = angular_distance(th,t0)
 %[cimg] = compute_coherence(oimg)
 %oimg - orientation image
 %cimg - coherence image(0-low coherence,1-high coherence)
-%Contact:
-%   ssc5@eng.buffalo.edu
-%   www.eng.buffalo.edu/~ssc5
-%Reference:
-%A. Ravishankar Rao,"A taxonomy of texture description", Springer Verlag
-%------------------------------------------------------------------------
+
 function [cimg] = compute_coherence(oimg)
     [h,w]   =   size(oimg);
     cimg    =   zeros(h,w);
@@ -128,21 +111,7 @@ function [cimg] = compute_coherence(oimg)
 %end function compute_coherence
 
 function n2 = dist2(x, c)
-%DIST2	Calculates squared distance between two sets of points.
-%
-%	Description
-%	D = DIST2(X, C) takes two matrices of vectors and calculates the
-%	squared Euclidean distance between them.  Both matrices must be of
-%	the same column dimension.  If X has M rows and N columns, and C has
-%	L rows and N columns, then the result has M rows and L columns.  The
-%	I, Jth entry is the  squared distance from the Ith row of X to the
-%	Jth row of C.
-%
-%	See also
-%	GMMACTIV, KMEANS, RBFFWD
-%
 
-%	Copyright (c) Christopher M Bishop, Ian T Nabney (1996, 1997)
 
 [ndata, dimx] = size(x);
 [ncentres, dimc] = size(c);
@@ -154,27 +123,7 @@ n2 = (ones(ncentres, 1) * sum((x.^2)', 1))' + ...
   		ones(ndata, 1) * sum((c.^2)',1) - ...
   		2.*(x*(c'));
 
-%--------------------------------------------------------------------------
-%fft_enhance_cubs
-%enhances the fingerprint image
-%syntax:
-%[oimg,fimg,bwimg,eimg,enhimg] =  fft_enhance_cubs(img, BLKSZ)
-%oimg -  [OUT] block orientation image(can be viewed using
-%        view_orientation_image.m)
-%fimg  - [OUT] block frequency image(indicates ridge spacing)
-%bwimg - [OUT] shows angular bandwidth image(filter bandwidth adapts near the
-%        singular points)
-%eimg  - [OUT] energy image. Indicates the 'ridgeness' of a block (can be 
-%        used for fingerprint segmentation)
-%enhimg- [OUT] enhanced image
-%img   - [IN]  input fingerprint image (HAS to be of DOUBLE type)
-%Contact:
-%   ssc5@eng.buffalo.edu
-%   www.eng.buffalo.edu/~ssc5
-%Reference:
-%S. Chikkerur,C. Wu and Govindaraju, "A Systematic approach for 
-%feature extraction in fingerprint images",ICBA 2004
-%--------------------------------------------------------------------------
+
 function [enhimg, cimg, oimg,fimg,bwimg,eimg] =  fft_enhance_cubs(img, BLKSZ)
     global NFFT;
 
